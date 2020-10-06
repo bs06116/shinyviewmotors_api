@@ -41,8 +41,10 @@ Route::prefix('v1')->group(function () {
         });
     });
     Route::prefix('home-page')->group(function () {
-            // List of Home Page Filter
+             // List of Home Page Filter
             Route::get('list', 'CommonController@getHomePage');
+             // List of Top Featured Vehicle
+            Route::get('featured-list', 'CommonController@getFeaturedVehicle');
     });
 
 });
