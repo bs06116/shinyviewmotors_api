@@ -27,7 +27,8 @@ class CommonController extends Controller
             $vehicles = $this->common->allVehicle();
             $brands = $this->common->allBrand();
             $models = $this->common->allBrandModel();
-            $home_filter = array('vehicles'=>$vehicles,'brands'=>$brands, 'models'=>$models);
+            $bodies = $this->common->allBody();
+            $home_filter = array('vehicles'=>$vehicles,'brands'=>$brands, 'models'=>$models, 'bodies'=>$bodies);
 
             return response()->json([
                 'success' => true,

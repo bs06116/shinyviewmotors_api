@@ -25,7 +25,13 @@ class CommonRepository
         return DB::table('vehicle_type')->where('status',1)->get()->toArray();
     }
     public function allBrand(){
-        return DB::table('brands')->where('status',1)->get()->toArray();
+        $result = DB::table('brands')->where('status',1)->get()->toArray();
+        $brands = [];
+        foreach ($result as $r):
+            $brands[]=array('name'=>$r->name,
+                'image_url'=>config('app.url').MyConstants::BRAND_IMAGE_URL.$r->image);
+        endforeach;
+        return $brands;
     }
     public function allBrandModel(){
         return DB::table('brand_models')->where('status',1)->get()->toArray();
