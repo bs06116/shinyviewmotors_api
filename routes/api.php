@@ -46,5 +46,14 @@ Route::prefix('v1')->group(function () {
              // List of Top Featured Vehicle
             Route::get('featured-list', 'CommonController@getFeaturedVehicle');
     });
+    Route::prefix('vehicle-feature')->group(function () {
+        // List of Car Feature list
+        Route::get('list', 'CommonController@getVehicleFeatureList');
+
+    });
+    Route::prefix('vehicle')->group(function () {
+        // List of NEW and USED Vehicle
+        Route::post('list', 'CommonController@allVehicle');
+    });
 
 });

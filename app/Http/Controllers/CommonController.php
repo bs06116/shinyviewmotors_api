@@ -28,7 +28,10 @@ class CommonController extends Controller
             $brands = $this->common->allBrand();
             $models = $this->common->allBrandModel();
             $bodies = $this->common->allBody();
-            $home_filter = array('vehicles'=>$vehicles,'brands'=>$brands, 'models'=>$models, 'bodies'=>$bodies);
+            $totalVehicle = $this->common->totalVehicle();
+            $home_filter = array('vehicles'=>$vehicles,'brands'=>$brands, 'models'=>$models,
+                'bodies'=>$bodies,
+                'total_vehicle'=>$totalVehicle);
 
             return response()->json([
                 'success' => true,
@@ -50,6 +53,40 @@ class CommonController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $featuredVehicles,
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Anything that went wrong
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+    public function allVehicle(Request $request)
+    {
+        try {
+            $allTypeVehicles = $this->common->allTypeOfVehicle($request);
+            return response()->json([
+                'success' => true,
+                'data' => $allTypeVehicles,
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Anything that went wrong
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+    public function getVehicleFeatureList(Request $request)
+    {
+        try {
+            $vehicleFeature = $this->common->getVehicleFeatureList();
+            return response()->json([
+                'success' => true,
+                'data' => $vehicleFeature,
             ], 200);
 
         } catch (\Exception $e) {
