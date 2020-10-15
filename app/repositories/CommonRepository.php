@@ -42,6 +42,15 @@ class CommonRepository
     public function allBody(){
         return DB::table('body_types')->where('status',1)->get()->toArray();
     }
+    public function vehicleCondition(){
+        return DB::table('condtions')->where('status',1)->get()->toArray();
+    }
+    public function vehicleYear(){
+        return DB::table('cars')->select('year as reg_year')->where('status',1)->groupby('year')->get()->toArray();
+    }
+    public function transmissionType(){
+        return DB::table('transmission_types')->where('status',1)->get()->toArray();
+    }
     public function latestFeaturedVehicle(){
         $result= DB::table('cars')->where('status',1)->where('featured',1)->limit(5)->get()->toArray();
         $featured=[];

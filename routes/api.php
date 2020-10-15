@@ -55,5 +55,9 @@ Route::prefix('v1')->group(function () {
         // List of NEW and USED Vehicle
         Route::post('list', 'CommonController@allVehicle');
     });
+    Route::prefix('vehicle')->group(function () {
+        // List of NEW and USED Vehicle
+        Route::post('filter', 'CarController@getCarFilter');
+    });
 
 });
