@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
-    protected $table = 'admin_users';
+    protected $table = 'users';
 
     use Notifiable;
 

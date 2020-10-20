@@ -36,61 +36,99 @@ class CarRepository
 //        $view = !empty($request->view) ? $request->view : 10;
 //        $type = !empty($request->type) ? $request->type : 'all';
 
-        $query = Car::query();
+        $query = DB::table('cars');
+        $query->select('cars.title','cars.regular_price','cars.featured_image','cars.year','cars.mileage','cars.description',
+            'fuel_types.name as fuel_types_name',
+            'users.first_name as first_name','users.last_name as last_name','users.phone as phone');
+        $query->join('fuel_types', 'cars.fuel_type_id', '=', 'fuel_types.id');
+        $query->join('users', 'cars.user_id', '=', 'users.id');
         $query->when($vehicle, function ($query, $vehicle) {
-            return $query->where('vehicle_id', $vehicle);
+            return $query->where('cars.vehicle_id', $vehicle);
         });
         $query->when($brands, function ($query, $brands) {
-            return $query->where('brand_id', $brands);
+            return $query->where('cars.brand_id', $brands);
         });
         $query->when($model, function ($query, $model) {
-            return $query->where('brand_model_id', $model);
+            return $query->where('cars.brand_model_id', $model);
         });
         $query->when($condition, function ($query, $condition) {
-            return $query->where('condtion_id', $condition);
+            return $query->where('cars.condtion_id', $condition);
         });
         $query->when($mileage, function ($query, $mileage) {
             $mileageArray = explode("-", $mileage);
-            return $query->whereBetween('mileage', $mileageArray);
+            return $query->whereBetween('cars.mileage', $mileageArray);
         });
         $query->when($year, function ($query, $year) {
-            return $query->where('year', $year);
+            return $query->where('cars.year', $year);
         });
         $query->when($transmission, function ($query, $transmission) {
-            return $query->where('transmission_type_id', $transmission);
+            return $query->where('cars.transmission_type_id', $transmission);
         });
         $query->when($minprice, function($query, $minprice) {
-                return $query->where('search_price', '>=', $minprice);
+                return $query->where('cars.regular_price', '>=', $minprice);
         });
         $query->when($maxprice, function($query, $maxprice) {
-                return $query->where('search_price', '>=', $maxprice);
+                return $query->where('cars.regular_price', '>=', $maxprice);
         });
         $query->when(request('filter_by') == 'date', function ($q) {
-            return $q->orderBy('created_at', request('ordering_rule', 'desc'));
-        })->where('status', 1)->where('admin_status', 1);
-        return $query->get();
+            return $q->orderBy('cars.created_at', request('sort', 'desc'));
+        })->where('cars.status', 1)->where('cars.admin_status', 1);
+        $queryResult = $query->get();
+        $result=[];
+        foreach ($queryResult as $data):
+                $result[] = array(
+                    'owner_name'=>$data->first_name.' '.$data->last_name,
+                    'phone'=>$data->phone,
+                    'title'=>$data->title,
+                    'year' => $data->year,
+                    'mileage' => $data->mileage,
+                    'price'=>$data->regular_price,
+                    'fuel_types_name'=>$data->fuel_types_name,
+                    'main_image_url'=>config('app.url').MyConstants::FEATURED_IMAGE_URL.$data->featured_image,
+                    'note'=>$data->description
+                );
+        endforeach;
+        return $result;
 
-//        $query->when(request('filter_by') == 'date', function ($q) {
-//            return $q->orderBy('created_at', request('ordering_rule', 'desc'));
-//        });
-//
-//            ->when($sort, function ($query, $sort) {
-//                if ($sort == 'desc') {
-//                    return $query->orderBy('id', 'DESC');
-//                } elseif ($sort == 'asc') {
-//                    return $query->orderBy('id', 'ASC');
-//                } elseif ($sort == 'price_desc') {
-//                    return $query->orderBy('search_price', 'DESC');
-//                } elseif ($sort == 'price_asc') {
-//                    return $query->orderBy('search_price', 'ASC');
-//                }
-//            })
-//            ->when($type, function ($query, $type) {
-//                if ($type == 'featured') {
-//                    return $query->where('featured', 1);
-//                }
-//            })
-//            ->where('status', 1)->where('admin_status', 1)->paginate($view);
+
+    }
+    public function carDetails($request){
+        $result = DB::table('cars')
+                ->select('cars.title','cars.regular_price','cars.featured_image','cars.year','cars.mileage','cars.description',
+                        'brands.name as brand_name','brand_models.name as brand_model_name',
+                        'body_types.name as body_type_name',
+                        'fuel_types.name as fuel_types_name',
+                        'transmission_types.name as transmission_types_name',
+                        'condtions.name as condtions_name')
+                ->join('brands', 'cars.brand_id', '=', 'brands.id')
+                ->join('brand_models', 'cars.brand_model_id', '=', 'brand_models.id')
+                ->join('body_types', 'cars.body_type_id', '=', 'body_types.id')
+                ->join('fuel_types', 'cars.fuel_type_id', '=', 'fuel_types.id')
+                ->join('transmission_types', 'cars.transmission_type_id', '=', 'transmission_types.id')
+                ->join('condtions', 'cars.condtion_id', '=', 'condtions.id')
+                ->where('cars.status',1)->where('cars.admin_status',1)->where('cars.id',$request->id)->get()->first();
+        $vehicleImages= DB::table('car_images')->get()->toArray();
+        $images=[];
+        foreach ($vehicleImages as $vi):
+            $images[] = config('app.url').MyConstants::SLIDER_IMAGE_URL.$vi->image;
+        endforeach;
+
+        $array = array('title'=>$result->title,
+                'year' => $result->year,
+                'mileage' => $result->mileage,
+                'brand_name'=>$result->brand_name,
+                'brand_model_name'=>$result->brand_model_name,
+                'price'=>$result->regular_price,
+                'body_type_name'=>$result->body_type_name,
+                'fuel_types_name'=>$result->fuel_types_name,
+                'transmission_type'=>$result->transmission_types_name,
+                'condtions'=>$result->fuel_types_name,
+                'main_image_url'=>config('app.url').MyConstants::FEATURED_IMAGE_URL.$result->featured_image,
+                'note'=>$result->description,
+                'car_images'=>$images
+
+        );
+        return $array;
     }
 
 

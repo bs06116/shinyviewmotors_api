@@ -40,4 +40,22 @@ class CarController extends Controller
             ], 400);
         }
     }
+    public function getCarDetails(Request $request)
+    {
+        try {
+            $result = $this->car->carDetails($request);
+
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Anything that went wrong
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
  }

@@ -25,7 +25,9 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $v = Validator::make($request->all(), [
-            'name' => 'required|min:3',
+            'first_name' => 'required|min:3',
+            'last_name' => 'required|min:3',
+            'phone' => 'required|min:3',
             'email' => 'required|email|unique:users',
             'password'  => 'required|min:3|confirmed',
         ]);
@@ -37,7 +39,9 @@ class AuthController extends Controller
             ], 400);
         }
         $user = new User();
-        $user->name = $request->name;
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->phone = $request->phone;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->save();
@@ -46,13 +50,13 @@ class AuthController extends Controller
     public function updateUser(Request $request)
     {
         $rules = array(
-            'name' => 'required|min:3',
+            'first_name' => 'required|min:3',
             'email' => 'required|email|unique:users',
             'password' => 'sometimes:min:6|required_with:password_confirmation|same:password_confirmation',
             'password_confirmation' => 'sometimes:min:6'
         );
         $messages = array(
-           'name.required' => '<p>Please enter  name.</p>',
+           'first_name.required' => '<p>Please enter  First name.</p>',
             'email.required' => '<p>Please enter email.</p>',
             'email.unique' =>'<p>Email already exits.</p>' ,
 

@@ -6,6 +6,7 @@ namespace App;
 
 class MyConstants
 {
-   const FEATURED_IMAGE_URL = 'images/cars/featured/';
-   const BRAND_IMAGE_URL = 'images/brands/';
+   const FEATURED_IMAGE_URL = '/images/cars/featured/';
+   const BRAND_IMAGE_URL = '/images/brands/';
+   const SLIDER_IMAGE_URL = '/images/cars/sliders/';
 }
