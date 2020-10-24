@@ -22,6 +22,8 @@ class CarRepository
 
     }
     public function carFilter($request){
+//        echo json_encode(array('Air condition','Navigation','Sunroof','Rear wiper'));
+//        die;
           $vehicle = $request->vehicle_id;
           $brands = $request->brand_id;
           $model = $request->model_id;
@@ -31,6 +33,7 @@ class CarRepository
           $transmission = $request->transmission_id;
           $minprice = $request->minprice;
           $maxprice = $request->maxprice;
+          $feature = $request->feature;
 
 //        $sort = !empty($request->sort) ? $request->sort : 'desc';
 //        $view = !empty($request->view) ? $request->view : 10;
@@ -69,6 +72,9 @@ class CarRepository
         });
         $query->when($maxprice, function($query, $maxprice) {
                 return $query->where('cars.regular_price', '>=', $maxprice);
+        });
+        $query->when($feature, function($query, $feature) {
+            return $query->whereRaw('json_contains(cars.features, \'["' . $feature . '"]\')');
         });
         $query->when(request('filter_by') == 'date', function ($q) {
             return $q->orderBy('cars.created_at', request('sort', 'desc'));

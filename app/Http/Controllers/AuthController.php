@@ -9,8 +9,10 @@ use App\Exceptions\Handler;
 use Auth;
 use Validator;
 use App\User;
+use App\Mail\WelcomeMail;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
+use Mail;
 
 
 class AuthController extends Controller
@@ -38,13 +40,18 @@ class AuthController extends Controller
                 'errors' => $v->errors()
             ], 400);
         }
+        $token = md5(time().$request->name.$request->email);
+        $data['verification_link'] = $token;
         $user = new User();
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
         $user->phone = $request->phone;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
+        $user->verification_link = $token;
+       // Mail::to($request->email)->send(new WelcomeMail($data));
         $user->save();
+
         return response()->json(['status' => 'success'], 200);
     }
     public function updateUser(Request $request)
@@ -100,6 +107,23 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function token($token)
+    {
+        $user = \App\Models\User::where('verification_link','=',$token)->first();
+        if(isset($user))
+        {
+            $user->email_verified = 1;
+            $user->update();
+
+            return response()->json(['status' => 'success','message'=>'Your profile has been update successfully.'], 200);
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'link expire'
             ], 400);
         }
     }

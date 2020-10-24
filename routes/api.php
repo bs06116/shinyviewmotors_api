@@ -25,6 +25,7 @@ Route::prefix('v1')->group(function () {
         Route::post('register', 'AuthController@register');
         // Login User
         Route::post('login', 'AuthController@login');
+        Route::get('/register/verify/{token}', 'AuthController@token');
 
         // Refresh the JWT Token
         Route::get('refresh', 'AuthController@refresh');
