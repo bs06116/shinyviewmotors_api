@@ -44,14 +44,17 @@ class CommonController extends Controller
                                     array('id'=>'100000>','text'=>'100000 >')
                                      );
             $transmitionType = $this->common->transmissionType();
-
-            $home_filter = array('vehicles'=>$vehicles,'brands'=>$brands,
+            $fuelType = $this->common->fuelType();
+            $engineSize = $this->common->engineSize();
+            $home_filter = array('vehicles'=>$vehicles,
+                'brands'=>$brands,
                 'models'=>$models,
-                'bodies'=>$bodies,
-                'vehicle_condition' =>$vehicleCondition,
-                'vehicle_mileage' => $vehicleMileage,
                 'year' => $vehicleYear,
+                'mileage' => $vehicleMileage,
                 'transmition_type' => $transmitionType,
+                'fuel_type'=>$fuelType,
+                'engine_size' =>$engineSize,
+                'body_type'=>$bodies,
                 'total_vehicle'=>$totalVehicle
                 );
 

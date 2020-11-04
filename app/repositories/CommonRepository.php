@@ -31,7 +31,9 @@ class CommonRepository
         $result = DB::table('brands')->where('status',1)->get()->toArray();
         $brands = [];
         foreach ($result as $r):
-            $brands[]=array('name'=>$r->name,
+            $brands[]=array(
+                'id'=>$r->id,
+                'name'=>$r->name,
                 'image_url'=>config('app.url').MyConstants::BRAND_IMAGE_URL.$r->image);
         endforeach;
         return $brands;
@@ -51,13 +53,21 @@ class CommonRepository
     public function transmissionType(){
         return DB::table('transmission_types')->where('status',1)->get()->toArray();
     }
+    public function fuelType(){
+        return DB::table('fuel_types')->where('status',1)->get()->toArray();
+    }
+    public function engineSize(){
+        return DB::table('cars')->select('engine as id','engine as engine_size')->groupBy('engine')->get()->toArray();
+    }
     public function latestFeaturedVehicle(){
         $result= DB::table('cars')->where('status',1)->where('featured',1)->limit(5)->get()->toArray();
         $featured=[];
         foreach ($result as $r):
-            $featured[]=array('title'=>$r->title,
-                               'price'=>$r->regular_price,
-                               'image_url'=>config('app.url').MyConstants::FEATURED_IMAGE_URL.$r->featured_image);
+            $featured[]=array(
+                'id'=>$r->id,
+                'title'=>$r->title,
+                'price'=>$r->regular_price,
+                'image_url'=>config('app.url').MyConstants::FEATURED_IMAGE_URL.$r->featured_image);
         endforeach;
         return $featured;
     }
@@ -67,17 +77,27 @@ class CommonRepository
         }else{
             $condition_id=1;
         }
-        $result= DB::table('cars')->where('status',1)->where('condtion_id',$request->condition_id)->limit(5)->get()->toArray();
+        $result = DB::table('cars')
+            ->select('cars.id', 'cars.title', 'cars.mileage', 'cars.regular_price','cars.featured_image',
+            'transmission_types.name as transmission_types_name',
+            'ulez.name as ulez_name')
+            ->join('transmission_types', 'cars.transmission_type_id', '=', 'transmission_types.id')
+            ->join('ulez', 'cars.ulez_id', '=', 'ulez.id')
+            ->where('cars.status',1)->where('cars.condtion_id',$condition_id)->limit(5)->get()->toArray();
         $allVehicle=[];
         foreach ($result as $r):
-            $allVehicle[]=array('title'=>$r->title,
+            $allVehicle[]=array('id'=>$r->id,
+                'title'=>$r->title,
+                'mileage'=>$r->mileage,
+                'ulez'=>$r->ulez_name,
+                'transmission_types'=>$r->transmission_types_name,
                 'price'=>$r->regular_price,
                 'image_url'=>config('app.url').MyConstants::FEATURED_IMAGE_URL.$r->featured_image);
         endforeach;
         return $allVehicle;
     }
     public function getVehicleFeatureList(){
-        return DB::table('car_features')->get()->toArray();
+        return DB::table('car_features')->orderby('name','ASC')->get()->toArray();
     }
 
 

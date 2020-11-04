@@ -59,6 +59,13 @@ Route::prefix('v1')->group(function () {
         Route::post('filter', 'CarController@getCarFilter');
         // List Details Vehicle
         Route::get('details', 'CarController@getCarDetails');
+        // List Model with Maker
+        Route::get('maker-with-model', 'CarController@getVehicleModel');
+        // Send Email to Seller
+        Route::post('send-email-to-seller', 'CarController@sendEmailToSeller');
+        // Similar Vehicle
+        Route::get('similar-list', 'CarController@getSimilarVehicle');
+
     });
 
 });
